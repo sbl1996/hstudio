@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 
 NAME = 'hstudio'
 IMPORT_NAME = 'hstudio'
-DESCRIPTION = "Training Platform"
+DESCRIPTION = "H training service"
 URL = 'https://github.com/sbl1996/hstudio'
 EMAIL = 'sbl1996@126.com'
 AUTHOR = 'HrvvI'
@@ -13,8 +13,6 @@ REQUIRES_PYTHON = '>=3.6.0'
 VERSION = None
 
 REQUIRED = [
-    "google-api-python-client",
-    "PyGithub",
     "hhutil",
     "pydantic",
     "python-dateutil",
