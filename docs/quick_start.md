@@ -141,4 +141,10 @@ Options:
   --help                Show this message and exit.
 
 $ hstudio tasks delete CIFAR10-test-2
+
+$ hstudio tasks list
+
+ID            Worker        Status    Started         Finished        Created
+------------  ------------  --------  --------------  --------------  --------------
+CIFAR10-test  colab-main-1  SUCCESS   06-18 16:59:06  06-18 17:04:56  06-18 16:58:47
 ```
