@@ -126,7 +126,7 @@ CIFAR10-test    colab-main-1  SUCCESS   06-18 16:12:08  06-18 16:17:39  06-18 16
 
 After task success, sync task log and open `CIFAR10-test-2.log`. We find that the final training accuracy is 90.15% and test accuracy is 88.42%. Obviously, more epochs are needed for better performance. Try it!
 
-Finally, we can delete tasks by ID. Remember not to delete a RUNNING task, which may cause unpredictable errors in host.
+Finally, we can delete tasks by ID. **Remember not to delete a RUNNING task, which may cause unpredictable errors in host.**
 
 ```bash
 $ hstudio tasks delete --help
