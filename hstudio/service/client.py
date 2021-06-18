@@ -84,6 +84,7 @@ class Client:
             return dt.strftime("%m-%d %H:%M:%S")
 
         tasks = self.get_tasks()
+        tasks = sort_task_for_show(tasks)
         rows = []
         for task in tasks:
             info = task['info']
@@ -97,11 +98,15 @@ class Client:
                 info.id, info.worker_id, status, started, finished, created])
 
         headers = ["ID", "Worker", "Status", "Started", "Finished", "Created"]
-        rows = sort_task_rows(rows)
         print(tabulate(rows, headers=headers))
 
 
     def list_workers(self):
+        def fmt_datetime(dt):
+            if dt is None:
+                return None
+            return dt.strftime("%m-%d %H:%M:%S")
+
         workers = self.get_workers()
         now = datetime_now()
         rows = []
@@ -120,10 +125,10 @@ class Client:
             if info.session_start is not None and info.session_duration is not None and status != DISCONNECTED:
                 remaining = get_remaining(info.session_start, info.session_duration)
 
-            heartbeat = format_datetime(last_heartbeat)
+            heartbeat = fmt_datetime(last_heartbeat)
             rows.append([info.id, runtime, remaining, running_task, status, heartbeat])
 
-        headers = ["ID", "Runtime", "Remaining", "RunTask", "Status", "Heartbeat"]
+        headers = ["ID", "Runtime", "Remaining", "RunningTask", "Status", "Heartbeat"]
         print(tabulate(rows, headers=headers))
 
     def submit_task(self, id, script_file, worker_id):
@@ -144,12 +149,22 @@ class Client:
         fmt_path(log_file).write_text(log)
 
 status2int = {
-    status.upper(): i
+    status: i
     for i, status in enumerate([
         TaskStatus.RUNNING, TaskStatus.INIT, TaskStatus.SUCCESS, TaskStatus.ERROR])
 }
 
-def sort_task_rows(rows):
-    def cmp(row1, row2):
-        return status2int[row1[2]] - status2int[row2[2]]
-    return sorted(rows, key=cmp_to_key(cmp))
+def sort_task_for_show(tasks):
+    def cmp(task1, task2):
+        d = status2int[task1['status']] - status2int[task2['status']]
+        if d == 0:
+            started1 = task1['info'].started_at
+            started2 = task2['info'].started_at
+            if started1 is not None and started2 is not None:
+                return -(started1 - started2).total_seconds()
+            else:
+                created1 = task1['info'].created_at
+                created2 = task2['info'].created_at
+                return -(created1 - created2).total_seconds()
+        return d
+    return sorted(tasks, key=cmp_to_key(cmp))

@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import typer
 from hhutil.io import fmt_path
@@ -43,8 +44,8 @@ def list_tasks():
 
 @tasks_app.command("submit")
 def submit_task(
-    task_id: str,
-    script_file: str = typer.Argument(..., help="Path to script file"),
+    script_file: str = typer.Argument(..., help="Path to python script file"),
+    task_id: str = typer.Argument(..., help="Task ID, must be unique"),
     worker_id: str = typer.Argument(..., help="Worker to submitted task")):
     client = get_client()
     client.submit_task(task_id, script_file, worker_id)
@@ -53,11 +54,19 @@ def submit_task(
 @tasks_app.command("sync_log")
 def sync_task_log(
     task_id: str,
-    log_file: str = typer.Argument(..., help="File path to save log")):
+    target: Path = typer.Argument(..., help="Target directory to save log"),
+    tofile: bool = typer.Option(False, "-f/-d", help="Save log to file or directory"),
+):
     client = get_client()
-    log_file = fmt_path(log_file)
-    if log_file.exists() and log_file.is_dir():
-        log_file = f"{log_file}/{task_id}.log"
+    if tofile:
+        log_file = fmt_path(target)
+    else:
+        target_dir = fmt_path(target)
+        if target_dir.exists():
+            assert target_dir.is_dir(), "Use --tofile to save log to file directly"
+        else:
+            target_dir.mkdir(parents=True)
+        log_file = f"{target_dir}/{task_id}.log"
     client.sync_log(task_id, log_file)
 
 
