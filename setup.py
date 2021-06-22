@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 
 NAME = 'hstudio'
 IMPORT_NAME = 'hstudio'
-DESCRIPTION = "H training service"
+DESCRIPTION = "Training service"
 URL = 'https://github.com/sbl1996/hstudio'
 EMAIL = 'sbl1996@126.com'
 AUTHOR = 'HrvvI'

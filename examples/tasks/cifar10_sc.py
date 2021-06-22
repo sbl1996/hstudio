@@ -64,3 +64,6 @@ learner = SuperLearner(
 learner.fit(ds_train, epochs, ds_test, val_freq=1,
             steps_per_epoch=steps_per_epoch, val_steps=test_steps,
             reuse_train_iterator=True)
+
+import tensorflow_datasets as tfds
+tfds.load()
