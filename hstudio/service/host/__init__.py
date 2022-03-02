@@ -4,20 +4,21 @@ from collections import deque
 from fastapi import FastAPI, Response, status
 
 from hstudio.service.task import TaskInfo, TaskStatus, TaskInfoWithStatus, TaskLogPatch
-from hstudio.service.worker import WorkerInfo
+from hstudio.models.worker import WorkerInfo
 from hstudio.utils import datetime_now
 
 # TODO: OpenAPI URL now rewrited by nginx, use parameters directly
 app = FastAPI()
 
 tasks = {}
-workers = {}
+workers: Dict[str, ] = {}
 
 worker_task_queue: Dict[str, Deque[str]] = {} # worker -> queue[task_id]
 
 
 def text_response(detail):
     return {"detail": detail}
+
 
 @app.get("/")
 def hello():

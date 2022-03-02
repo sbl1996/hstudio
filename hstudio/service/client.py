@@ -8,7 +8,7 @@ from hhutil.io import fmt_path
 
 from hstudio.utils import format_url, datetime_now, parse_datetime, format_datetime, encode_script
 from hstudio.service.common import DISCONNECTED_THRESHOLD
-from hstudio.service.worker import WorkerInfo
+from hstudio.models.worker import WorkerInfo
 from hstudio.service.task import TaskInfo, TaskStatus
 
 

@@ -35,6 +35,7 @@ class TaskInfoWithStatus(BaseModel):
 class TaskLogPatch(BaseModel):
     content: str
 
+
 class Task:
 
     def __init__(self, info: TaskInfo):

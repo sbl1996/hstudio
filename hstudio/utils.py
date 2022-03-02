@@ -43,5 +43,6 @@ def unset_proxy():
 def encode_script(script: str):
     return base64.b64encode(script.encode()).decode()
 
+
 def decode_script(encoded_scirpt):
     return base64.b64decode(encoded_scirpt.encode()).decode()
