@@ -1,5 +1,6 @@
 /tests/local
 logs/
+ttest/
 
 .DS_Store
 .idea/
