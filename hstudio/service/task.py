@@ -39,7 +39,7 @@ class TaskLogPatch(BaseModel):
 
 class Task:
 
-    def __init__(self, info: TaskInfo):
+    def __init__(self, info: TaskInfo, env_vars=None):
         self.info = info
         self.status = TaskStatus.INIT
 
@@ -52,6 +52,7 @@ class Task:
         self.script_file.write_text(decode_script(self.info.script))
 
         self.log_file = self.work_dir / "train.log"
+        self.env_vars = env_vars or {}
 
     def get_log(self):
         return self.log_file.read_text()
@@ -68,8 +69,10 @@ class Task:
             return TaskStatus.ERROR
 
     def start(self):
-        python_bin = sys.executable
-        self.process = subprocess.Popen(f"{python_bin} -u {self.script_file} > {self.log_file} 2>&1", shell=True)
+        python_exe = sys.executable
+        env_prefix = " ".join([f"{k}={v}" for k, v in self.env_vars.items()])
+        cmd = f"{env_prefix} {python_exe} -u {self.script_file} > {self.log_file} 2>&1"
+        self.process = subprocess.Popen(cmd, shell=True)
         self.info.started_at = datetime_now()
 
     def after_finish(self):

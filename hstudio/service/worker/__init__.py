@@ -27,13 +27,15 @@ class WorkerInfo(BaseModel):
 
 class Worker:
 
-    def __init__(self, id, runtime_type='auto', session_start=None, session_duration=None):
+    def __init__(self, id, runtime_type='auto', session_start=None, session_duration=None, env_vars=None):
         if runtime_type == 'auto':
             runtime_type = detect_runtime()
         self.info = WorkerInfo(
             id=id, runtime_type=runtime_type,
             session_start=session_start,
             session_duration=session_duration)
+
+        self.env_vars = env_vars or {}
 
         self.host = None
         self.last_heartbeat = None
@@ -77,7 +79,7 @@ class Worker:
             rep = requests.get(f"{self.host}/tasks/{self.info.id}/pull")
             if rep.status_code == 200:
                 info = TaskInfo(**rep.json())
-                return Task(info)
+                return Task(info, env_vars=self.env_vars)
             elif rep.status_code == 204:
                 return None
             else:
