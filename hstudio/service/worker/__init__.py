@@ -18,15 +18,22 @@ def log_info(msg):
 EVENT_LOOP_INTERVAL = HEARTBEAT_INTERVAL
 
 
+class WorkerInfo(BaseModel):
+    id: str
+    runtime_type: RuntimeType
+    session_start: Optional[datetime]
+    session_duration: Optional[timedelta]
+
+
 class Worker:
 
-    def __init__(self, name, runtime_type='auto', session_start=None, session_duration=None):
+    def __init__(self, id, runtime_type='auto', session_start=None, session_duration=None):
         if runtime_type == 'auto':
             runtime_type = detect_runtime()
-        self.name = name
-        self.runtime_type = runtime_type
-        self.session_start = session_start
-        self.session_duration = session_duration
+        self.info = WorkerInfo(
+            id=id, runtime_type=runtime_type,
+            session_start=session_start,
+            session_duration=session_duration)
 
         self.host = None
         self.last_heartbeat = None
@@ -36,13 +43,7 @@ class Worker:
 
     def register(self, host):
         host = format_url(host)
-        data = {
-            "name": self.name,
-            "runtime_type": self.runtime_type,
-            "session_start": self.session_start,
-            "session_duration": self.session_duration,
-        }
-        rep = requests.post(host + "/workers", json=data)
+        rep = requests.post(host + "/workers", data=self.info.json())
         if rep.status_code == 201:
             self.last_heartbeat = parse_datetime(rep.json()['heartbeat'])
             self.host = host
@@ -59,7 +60,7 @@ class Worker:
     def heartbeat(self):
         self.assert_registered()
         try:
-            rep = requests.post(f"{self.host}/workers/{self.name}/heartbeat")
+            rep = requests.post(f"{self.host}/workers/{self.info.id}/heartbeat")
             if rep.status_code == 200:
                 self.last_heartbeat = parse_datetime(rep.json()['heartbeat'])
                 return True
@@ -73,7 +74,7 @@ class Worker:
     def pull_task(self) -> Optional[Task]:
         self.assert_registered()
         try:
-            rep = requests.get(f"{self.host}/tasks/{self.name}/pull")
+            rep = requests.get(f"{self.host}/tasks/{self.info.id}/pull")
             if rep.status_code == 200:
                 info = TaskInfo(**rep.json())
                 return Task(info)
@@ -92,7 +93,7 @@ class Worker:
             info=self.running_task.info,
             status=self.task_status,
         )
-        rep = requests.put(f"{self.host}/tasks/{self.name}", data=data.json())
+        rep = requests.put(f"{self.host}/tasks/{self.info.id}", data=data.json())
         if rep.status_code >= 400:
             print("Task update error: %s" % rep.text)
 
@@ -100,7 +101,7 @@ class Worker:
         self.assert_registered()
         log = TaskLogPatch(content=self.running_task.get_log())
         try:
-            rep = requests.put(f"{self.host}/tasks/{self.name}/log", data=log.json())
+            rep = requests.put(f"{self.host}/tasks/{self.info.id}/log", data=log.json())
             if rep.status_code >= 400:
                 print("Sync log error: %s" % rep.text)
         except ConnectionError as e:

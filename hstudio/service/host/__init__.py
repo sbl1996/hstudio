@@ -4,7 +4,7 @@ from collections import deque
 from fastapi import FastAPI, Response, status
 
 from hstudio.service.task import TaskInfo, TaskStatus, TaskInfoWithStatus, TaskLogPatch
-from hstudio.models.worker import WorkerInfo
+from hstudio.service.worker import WorkerInfo
 from hstudio.utils import datetime_now
 
 # TODO: OpenAPI URL now rewrited by nginx, use parameters directly
