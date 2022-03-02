@@ -11,7 +11,7 @@ from hstudio.utils import datetime_now
 app = FastAPI()
 
 tasks = {}
-workers: Dict[str, ] = {}
+workers: Dict[str, Dict] = {}
 
 worker_task_queue: Dict[str, Deque[str]] = {} # worker -> queue[task_id]
 
