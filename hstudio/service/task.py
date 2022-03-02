@@ -1,3 +1,4 @@
+import sys
 import subprocess
 from datetime import datetime
 from enum import Enum
@@ -67,7 +68,7 @@ class Task:
             return TaskStatus.ERROR
 
     def start(self):
-        python_bin = "python"
+        python_bin = sys.executable
         self.process = subprocess.Popen(f"{python_bin} -u {self.script_file} > {self.log_file} 2>&1", shell=True)
         self.info.started_at = datetime_now()
 

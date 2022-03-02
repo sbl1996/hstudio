@@ -66,5 +66,4 @@ learner = SuperLearner(
     work_dir=f"./drive/MyDrive/models/{TASK_NAME}-{TASK_ID}")
 
 learner.fit(ds_train, epochs, ds_test, val_freq=1,
-            steps_per_epoch=steps_per_epoch, val_steps=test_steps,
-            reuse_train_iterator=True)
+            steps_per_epoch=steps_per_epoch, val_steps=test_steps)
